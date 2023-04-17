@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">My Application</string>
+    <string name="number">number</string>
+    <string name="select_day">select day</string>
+    <string name="title">что-то написать надо</string>
+    <string name="text_for_beauty_add_new_thing">что-то типо редактирование записи</string>
+    <string name="business">business</string>
+    <string name="time">time</string>
+    <string name="save">Save</string>
+    <string name="split">—</string>
+    <string name="time_start">time start</string>
+    <string name="time_end">time end</string>
+    <string name="delete_title_item">delete</string>
+    <string name="change_title_item">change</string>
+</resources>
