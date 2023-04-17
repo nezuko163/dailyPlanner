@@ -1,15 +1,11 @@
 package com.example.adapter
 
 import android.annotation.SuppressLint
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView.OnItemClickListener
 import androidx.recyclerview.widget.RecyclerView
-import com.example.db.SQLDBhelper
 import com.example.model.BusinessModel
-import com.example.myapplication.DayActivity
 import com.example.myapplication.R
 import com.example.myapplication.databinding.BusinessItemBinding
 
@@ -28,11 +24,13 @@ class BusinessAdapter : RecyclerView.Adapter<BusinessAdapter.BusinessHolder>() {
 
         fun bind(business: BusinessModel) {
             binding.apply {
-                timeEnd.text = "${business.hour_start}:${business.min_start}"
-                timeStart.text = "${business.hour_end}:${business.min_end}"
+                timeStart.text = "${business.hour_start}:${business.min_start}"
+                timeEnd.text = "${business.hour_end}:${business.min_end}"
                 businessName.text = business.name_of_business
             }
         }
+
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BusinessHolder {

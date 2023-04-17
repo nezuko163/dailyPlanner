@@ -25,6 +25,16 @@ class SQLDBhelper(context: Context): SQLiteOpenHelper(context, DB_NAME, null, DB
         private val COLUMN_MIN_END = "min_end"
     }
 
+    interface SQLDBhelper {
+        fun deleteBusiness(id: Int)
+        fun deleteBusiness(business: BusinessModel)
+        fun deleteAll()
+        fun redactBusiness(id: Int, business: BusinessModel)
+        fun getBusinesses(condition: String = "1"): ArrayList<BusinessModel>
+        fun addBusiness(business: BusinessModel): Long
+        fun deleteDayTimeBusinesses(year: Int, month: Int, day: Int)
+    }
+
     override fun onCreate(db: SQLiteDatabase?) {
         val create_db = "CREATE TABLE IF NOT EXISTS $TABLE_NAME (" +
                 "$COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT ," +
@@ -164,7 +174,6 @@ class SQLDBhelper(context: Context): SQLiteOpenHelper(context, DB_NAME, null, DB
             } while (cursor.moveToNext())
         }
         cursor.close()
-        db.close()
         return bs_list
     }
 

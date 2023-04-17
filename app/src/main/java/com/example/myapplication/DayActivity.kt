@@ -72,6 +72,9 @@ class DayActivity : AppCompatActivity() {
     private fun initRcView() {
         binding.rcView.layoutManager = LinearLayoutManager(this)
         adapter.setBusinessList(bs_list)
+        adapter.onItemClick  = {business: BusinessModel ->
+            goToAddActivityForRedact(business)
+        }
         binding.rcView.adapter = adapter
     }
 
@@ -170,12 +173,16 @@ class DayActivity : AppCompatActivity() {
         launcher.launch(i)
     }
 
-    private fun goToAddActivityForRedact() {
+    private fun goToAddActivityForRedact(business: BusinessModel) {
         val i = Intent(this, AddNewThing::class.java)
         i.putExtra("year", year)
-            .putExtra("month", "month")
+            .putExtra("month", month)
             .putExtra("day", day)
-
+            .putExtra("business", business.name_of_business)
+            .putExtra("hour_start", business.hour_start)
+            .putExtra("min_start", business.min_start)
+            .putExtra("hour_end", business.hour_end)
+            .putExtra("min_end", business.min_end)
         launcher.launch(i)
     }
 
