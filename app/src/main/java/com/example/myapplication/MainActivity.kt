@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity() {
                 .putExtra("year", this._year)
                 .putExtra("month", this._month)
                 .putExtra("day", this._day)
-                .putExtra("date", this.selected_date))
+                .putExtra("date", "$_day ${MONTHS[_month!! + 1]}"))
         } else {
             Toast.makeText(this, "выберите дату", Toast.LENGTH_SHORT).show()
         }

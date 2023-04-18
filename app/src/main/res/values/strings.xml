@@ -2,7 +2,7 @@
     <string name="app_name">My Application</string>
     <string name="number">number</string>
     <string name="select_day">select day</string>
-    <string name="title">что-то написать надо</string>
+    <string name="title">Daily planner</string>
     <string name="text_for_beauty_add_new_thing">что-то типо редактирование записи</string>
     <string name="business">business</string>
     <string name="time">time</string>

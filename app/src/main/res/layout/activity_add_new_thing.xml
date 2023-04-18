@@ -71,7 +71,7 @@
         android:layout_marginTop="150dp"
         android:textColor="@color/black"
         android:textSize="20sp"
-        android:text="@string/text_for_beauty_add_new_thing"
+        android:text=""
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tb"/>

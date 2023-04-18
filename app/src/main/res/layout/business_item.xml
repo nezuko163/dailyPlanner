@@ -72,16 +72,16 @@
                 android:textColor="@color/black"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/dots"
+                app:layout_constraintEnd_toStartOf="@id/star"
                 app:layout_constraintTop_toTopOf="parent"/>
 
             <ImageButton
-                android:id="@+id/dots"
+                android:id="@+id/star"
                 android:layout_width="40dp"
                 android:layout_height="match_parent"
                 android:layout_alignParentEnd="false"
                 android:background="@null"
-                android:src="@drawable/dots"
+                android:src="@drawable/star"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent">

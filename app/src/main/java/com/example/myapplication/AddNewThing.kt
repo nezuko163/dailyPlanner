@@ -107,6 +107,9 @@ class AddNewThing : AppCompatActivity() {
                 hour_end!!,
                 min_end!!
             )
+            binding.textView4.text = "Redact"
+        } else {
+            binding.textView4.text = "Add"
         }
     }
 
