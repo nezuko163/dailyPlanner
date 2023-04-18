@@ -45,6 +45,7 @@ class BusinessAdapter : RecyclerView.Adapter<BusinessAdapter.BusinessHolder>() {
     @SuppressLint("NotifyDataSetChanged")
     fun addBusiness(business: BusinessModel) {
         business_list.add(business)
+        sortBusinessList()
         notifyDataSetChanged()
     }
     fun equals(yeah: BusinessModel, other: BusinessModel) : Boolean {
@@ -64,18 +65,24 @@ class BusinessAdapter : RecyclerView.Adapter<BusinessAdapter.BusinessHolder>() {
             val item = iterator.next()
             if (equals(item, business)) iterator.remove()
         }
+        sortBusinessList()
         notifyDataSetChanged()
     }
 
     @SuppressLint("NotifyDataSetChanged")
     fun deleteDayTimeBusinesses() {
         business_list.clear()
+        sortBusinessList()
         notifyDataSetChanged()
     }
 
     @SuppressLint("NotifyDataSetChanged")
     fun setBusinessList(_bs_list: ArrayList<BusinessModel>) {
         business_list = _bs_list
+        sortBusinessList()
+        for (i in business_list) {
+            println(i.name_of_business + " ${i.hour_start} ${i.min_start}")
+        }
         notifyDataSetChanged()
     }
 
@@ -83,7 +90,12 @@ class BusinessAdapter : RecyclerView.Adapter<BusinessAdapter.BusinessHolder>() {
     fun redactBusiness(business_old: BusinessModel, business_new: BusinessModel) {
         this.deleteBusiness(business_old)
         business_list.add(business_new)
+        sortBusinessList()
         notifyDataSetChanged()
     }
 
+    private fun sortBusinessList() {
+        business_list.sortWith(compareBy({ it.hour_start }, { it.min_start }))
+
+    }
 }

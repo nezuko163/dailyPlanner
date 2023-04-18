@@ -77,8 +77,6 @@ class DayActivity : AppCompatActivity() {
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
                 when (result.resultCode) {
                     ADDBUSINESS -> addBusiness(result)
-
-                    // при нажатии на айтем нужно передать в адд активити old_business
                     REDACTBUSINESS -> redactBusiness(result)
                     DELETEBUSINESS -> deleteBusiness(result)
                 }
@@ -111,7 +109,6 @@ class DayActivity : AppCompatActivity() {
     }
 
     private fun redactBusiness(result: ActivityResult) {
-
         val new_business = getResultFromAddActivity(result)
 
         val old_name_of_business = result.data?.getStringExtra("old_business")
@@ -200,5 +197,4 @@ class DayActivity : AppCompatActivity() {
     private fun goBack() {
         finish()
     }
-
 }

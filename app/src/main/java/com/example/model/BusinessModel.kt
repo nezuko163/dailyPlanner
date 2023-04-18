@@ -11,3 +11,5 @@ data class BusinessModel(
     val min_end: Int,
     var id: Int? = null,
 )
+
+
