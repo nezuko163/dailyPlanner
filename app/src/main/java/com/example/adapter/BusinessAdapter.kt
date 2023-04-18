@@ -29,8 +29,6 @@ class BusinessAdapter : RecyclerView.Adapter<BusinessAdapter.BusinessHolder>() {
                 businessName.text = business.name_of_business
             }
         }
-
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BusinessHolder {
@@ -43,7 +41,6 @@ class BusinessAdapter : RecyclerView.Adapter<BusinessAdapter.BusinessHolder>() {
     override fun onBindViewHolder(holder: BusinessHolder, position: Int) {
         holder.bind(business_list[position])
         holder.itemView.tag = position
-
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -51,23 +48,22 @@ class BusinessAdapter : RecyclerView.Adapter<BusinessAdapter.BusinessHolder>() {
         business_list.add(business)
         notifyDataSetChanged()
     }
+    fun equals(yeah: BusinessModel, other: BusinessModel) : Boolean {
+        return yeah.name_of_business == other.name_of_business &&
+                yeah.year == other.year &&
+                yeah.month == other.month &&
+                yeah.day == other.day &&
+                yeah.hour_start == other.hour_start && yeah.min_start == other.min_start &&
+                yeah.hour_end == other.hour_end &&
+                yeah.min_end == other.min_end
+    }
 
     @SuppressLint("NotifyDataSetChanged")
     fun deleteBusiness(business: BusinessModel) {
-        fun equals(yeah: BusinessModel, other: BusinessModel) : Boolean {
-            return yeah.name_of_business == other.name_of_business &&
-                    yeah.year == other.year &&
-                    yeah.month == other.month &&
-                    yeah.day == other.day &&
-                    yeah.hour_start == other.hour_start && yeah.min_start == other.min_start &&
-                    yeah.hour_end == other.hour_end &&
-                    yeah.min_end == other.min_end
-        }
-
-        for (x in business_list) {
-            if (equals(x, business)) {
-                business_list.remove(x)
-            }
+        val iterator = business_list.iterator()
+        while (iterator.hasNext()) {
+            val item = iterator.next()
+            if (equals(item, business)) iterator.remove()
         }
         notifyDataSetChanged()
     }
@@ -81,6 +77,13 @@ class BusinessAdapter : RecyclerView.Adapter<BusinessAdapter.BusinessHolder>() {
     @SuppressLint("NotifyDataSetChanged")
     fun setBusinessList(_bs_list: ArrayList<BusinessModel>) {
         business_list = _bs_list
+        notifyDataSetChanged()
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun redactBusiness(business_old: BusinessModel, business_new: BusinessModel) {
+        this.deleteBusiness(business_old)
+        business_list.add(business_new)
         notifyDataSetChanged()
     }
 }

@@ -45,10 +45,6 @@ class DayActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        for (i in db.getBusinesses("day = $day")) {
-            Log.i("zxc", i.name_of_business)
-        }
-
         db.close()
         adapter.deleteDayTimeBusinesses()
         super.onDestroy()
@@ -72,7 +68,7 @@ class DayActivity : AppCompatActivity() {
     private fun initRcView() {
         binding.rcView.layoutManager = LinearLayoutManager(this)
         adapter.setBusinessList(bs_list)
-        adapter.onItemClick  = {business: BusinessModel ->
+        adapter.onItemClick = { business: BusinessModel ->
             goToAddActivityForRedact(business)
         }
         binding.rcView.adapter = adapter
@@ -80,13 +76,12 @@ class DayActivity : AppCompatActivity() {
 
     private fun createLauncher() {
         launcher =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-                    result: ActivityResult ->
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
                 when (result.resultCode) {
                     ADDBUSINESS -> addBusiness(result)
 
                     // при нажатии на айтем нужно передать в адд активити old_business
-//                    REDACTBUSINESS -> redactBusiness(result)
+                    REDACTBUSINESS -> redactBusiness(result)
                     DELETEBUSINESS -> deleteBusiness(result)
                 }
             }
@@ -117,11 +112,29 @@ class DayActivity : AppCompatActivity() {
         adapter.deleteBusiness(business)
     }
 
-    private fun redactBusiness(result: ActivityResult, old_business: BusinessModel) {
+    private fun redactBusiness(result: ActivityResult) {
+
         val new_business = getResultFromAddActivity(result)
+
+        val old_name_of_business = result.data?.getStringExtra("old_business")
+        val old_hour_start = result.data?.getIntExtra("old_hour_start", -1)
+        val old_min_start = result.data?.getIntExtra("old_min_start", -1)
+        val old_hour_end = result.data?.getIntExtra("old_hour_end", -1)
+        val old_min_end = result.data?.getIntExtra("old_min_end", -1)
+
+        val old_business = BusinessModel(
+            old_name_of_business!!,
+            year!!,
+            month!!,
+            day!!,
+            old_hour_start!!,
+            old_min_start!!,
+            old_hour_end!!,
+            old_min_end!!
+        )
+
         db.redactBusiness(old_business, new_business)
-
-
+        adapter.redactBusiness(old_business, new_business)
     }
 
     private fun addBusiness(result: ActivityResult) {

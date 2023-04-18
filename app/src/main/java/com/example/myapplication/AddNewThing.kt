@@ -1,6 +1,5 @@
 package com.example.myapplication
 
-import android.annotation.SuppressLint
 import android.app.TimePickerDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -28,7 +27,7 @@ class AddNewThing : AppCompatActivity() {
     private var min_start: Int? = null
     private var hour_end: Int? = null
     private var min_end: Int? = null
-
+    private var old_business: BusinessModel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,7 +63,8 @@ class AddNewThing : AppCompatActivity() {
             }
 
             button.setOnClickListener {
-                done()
+                if (hour_start == -1) { done() }
+                else { redact() }
             }
         }
 
@@ -96,6 +96,18 @@ class AddNewThing : AppCompatActivity() {
         hour_end = intent.getIntExtra("hour_end", -1)
         min_end = intent.getIntExtra("min_end", -1)
 
+        if (hour_start != -1) {
+            old_business = BusinessModel(
+                name_of_business!!,
+                year!!,
+                month!!,
+                day!!,
+                hour_start!!,
+                min_start!!,
+                hour_end!!,
+                min_end!!
+            )
+        }
     }
 
     private fun onTimeClick(edit_text: EditText) {
@@ -132,7 +144,10 @@ class AddNewThing : AppCompatActivity() {
         if (!(start.slice(0..1).isDigitsOnly() &&
                     start.slice(3..4).isDigitsOnly() &&
                     end.slice(0..1).isDigitsOnly() &&
-                    end.slice(3..4).isDigitsOnly())) { return false }
+                    end.slice(3..4).isDigitsOnly())
+        ) {
+            return false
+        }
 
         return true
     }
@@ -142,6 +157,7 @@ class AddNewThing : AppCompatActivity() {
         var bs: BusinessModel? = null
 
     }
+
     private fun getDataFromET(): ReturnValues {
         val check = ReturnValues()
 
@@ -158,7 +174,16 @@ class AddNewThing : AppCompatActivity() {
         val min_end = end.slice(3..4).toInt()
 
         check.bs =
-            BusinessModel(bus_name, year!!, month!!, day!!, hour_start, min_start, hour_end, min_end)
+            BusinessModel(
+                bus_name,
+                year!!,
+                month!!,
+                day!!,
+                hour_start,
+                min_start,
+                hour_end,
+                min_end
+            )
 
         return check
     }
@@ -179,7 +204,6 @@ class AddNewThing : AppCompatActivity() {
     }
 
     private fun delete() {
-        Log.i("zxc", name_of_business!!)
         val i = Intent()
             .putExtra("business", name_of_business)
             .putExtra("hour_start", hour_start)
@@ -187,6 +211,25 @@ class AddNewThing : AppCompatActivity() {
             .putExtra("hour_end", hour_end)
             .putExtra("min_end", min_end)
         setResult(1002, i)
+        finish()
+    }
+
+    private fun redact() {
+        val new_bs = getDataFromET().bs ?: return
+        val i = Intent()
+            .putExtra("old_hour_start", old_business?.hour_start)
+            .putExtra("old_min_start", old_business?.min_start)
+            .putExtra("old_hour_end", old_business?.hour_end)
+            .putExtra("old_min_end", old_business?.min_end)
+            .putExtra("old_business", old_business?.name_of_business)
+
+            .putExtra("hour_start", new_bs.hour_start)
+            .putExtra("min_start", new_bs.min_start)
+            .putExtra("hour_end", new_bs.hour_end)
+            .putExtra("min_end", new_bs.min_end)
+            .putExtra("business", new_bs.name_of_business)
+
+        setResult(1001, i)
         finish()
     }
 }

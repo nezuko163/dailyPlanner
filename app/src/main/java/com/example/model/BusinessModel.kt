@@ -10,4 +10,4 @@ data class BusinessModel(
     val hour_end: Int,
     val min_end: Int,
     var id: Int? = null,
-)
+) : java.io.Serializable
