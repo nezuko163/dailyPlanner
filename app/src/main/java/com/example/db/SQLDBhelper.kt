@@ -5,7 +5,6 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import android.util.Log
 import com.example.model.BusinessModel as BusinessModel
 
 class SQLDBhelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_VERSION) {
@@ -90,10 +89,6 @@ class SQLDBhelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, D
         val delete_q = "DELETE FROM $TABLE_NAME;"
         db.execSQL(delete_q)
         db.close()
-    }
-
-    fun redactBusiness(id: Int, business: BusinessModel) {
-
     }
 
     fun redactBusiness(business_old: BusinessModel, business_new: BusinessModel) {

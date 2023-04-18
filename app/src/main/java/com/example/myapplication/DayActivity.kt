@@ -4,7 +4,6 @@ import android.content.DialogInterface
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
@@ -28,7 +27,6 @@ class DayActivity : AppCompatActivity() {
         const val ADDBUSINESS = 1000
         const val REDACTBUSINESS = 1001
         const val DELETEBUSINESS = 1002
-
 
         private var bs_list: ArrayList<BusinessModel> = ArrayList()
         private var date: String? = null

@@ -24,8 +24,8 @@ class BusinessAdapter : RecyclerView.Adapter<BusinessAdapter.BusinessHolder>() {
 
         fun bind(business: BusinessModel) {
             binding.apply {
-                timeStart.text = "${business.hour_start}:${business.min_start}"
-                timeEnd.text = "${business.hour_end}:${business.min_end}"
+                timeStart.text = "${business.hour_start}:" + "0".repeat(2 - business.min_start.toString().length) + "${business.min_start}"
+                timeEnd.text = "${business.hour_end}:" +  "0".repeat(2 - business.min_start.toString().length) + "${business.min_end}"
                 businessName.text = business.name_of_business
             }
         }
@@ -40,7 +40,6 @@ class BusinessAdapter : RecyclerView.Adapter<BusinessAdapter.BusinessHolder>() {
 
     override fun onBindViewHolder(holder: BusinessHolder, position: Int) {
         holder.bind(business_list[position])
-        holder.itemView.tag = position
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -86,4 +85,5 @@ class BusinessAdapter : RecyclerView.Adapter<BusinessAdapter.BusinessHolder>() {
         business_list.add(business_new)
         notifyDataSetChanged()
     }
+
 }
