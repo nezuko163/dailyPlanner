@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">My Application</string>
+    <string name="app_name">Ежедневник</string>
     <string name="number">number</string>
     <string name="select_day">select day</string>
     <string name="title">Daily planner</string>
