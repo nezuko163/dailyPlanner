@@ -8,6 +8,8 @@ import com.example.db.SQLDBhelper
 import com.example.myapplication.databinding.ActivityMainBinding
 import java.util.Calendar
 
+
+
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var calendar: Calendar
@@ -16,19 +18,23 @@ class MainActivity : AppCompatActivity() {
     private var _month: Int? = null
     private var _year: Int? = null
 
-    val MONTHS = mapOf(
-        1 to "January",
-        2 to "February",
-        3 to "March",
-        4 to "April",
-        5 to "May",
-        6 to "June",
-        7 to "July",
-        8 to "August",
-        9 to "September",
-        10 to "October",
-        11 to "November",
-        12 to "December")
+
+    companion object {
+        val MONTHS = mapOf(
+            1 to "January",
+            2 to "February",
+            3 to "March",
+            4 to "April",
+            5 to "May",
+            6 to "June",
+            7 to "July",
+            8 to "August",
+            9 to "September",
+            10 to "October",
+            11 to "November",
+            12 to "December"
+        )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,11 +61,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun goToNextActiv() {
         if (this.isDateSelected()) {
-            startActivity(Intent(this, DayActivity::class.java)
-                .putExtra("year", this._year)
-                .putExtra("month", this._month)
-                .putExtra("day", this._day)
-                .putExtra("date", "$_day ${MONTHS[_month!! + 1]}"))
+            startActivity(
+                Intent(this, DayActivity::class.java)
+                    .putExtra("year", this._year)
+                    .putExtra("month", this._month)
+                    .putExtra("day", this._day)
+                    .putExtra("date", "$_day ${MONTHS[_month!! + 1]}")
+            )
         } else {
             Toast.makeText(this, "выберите дату", Toast.LENGTH_SHORT).show()
         }
