@@ -117,19 +117,28 @@ class DayActivity : AppCompatActivity() {
         val old_hour_end = result.data?.getIntExtra("old_hour_end", -1)
         val old_min_end = result.data?.getIntExtra("old_min_end", -1)
 
-        val old_business = BusinessModel(
-            old_name_of_business!!,
-            year!!,
-            month!!,
-            day!!,
-            old_hour_start!!,
-            old_min_start!!,
-            old_hour_end!!,
-            old_min_end!!
-        )
+        try {
+            val old_business = BusinessModel(
 
-        db.redactBusiness(old_business, new_business)
-        adapter.redactBusiness(old_business, new_business)
+                old_name_of_business!!,
+                year!!,
+                month!!,
+                day!!,
+                old_hour_start!!,
+                old_min_start!!,
+                old_hour_end!!,
+                old_min_end!!
+            )
+
+            db.redactBusiness(old_business, new_business)
+            adapter.redactBusiness(old_business, new_business)
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return
+        }
+
+
     }
 
     private fun addBusiness(result: ActivityResult) {
