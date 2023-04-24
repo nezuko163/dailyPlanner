@@ -13,7 +13,7 @@ class BusinessAdapter : RecyclerView.Adapter<BusinessAdapter.BusinessHolder>() {
     private var business_list = ArrayList<BusinessModel>()
     var onItemClick: ((BusinessModel) -> Unit)? = null
 
-    inner class BusinessHolder(item: View): RecyclerView.ViewHolder(item) {
+    inner class BusinessHolder(item: View) : RecyclerView.ViewHolder(item) {
         val binding = BusinessItemBinding.bind(item)
 
         init {
@@ -22,17 +22,21 @@ class BusinessAdapter : RecyclerView.Adapter<BusinessAdapter.BusinessHolder>() {
             }
         }
 
+        @SuppressLint("SetTextI18n")
         fun bind(business: BusinessModel) {
             binding.apply {
-                timeStart.text = "${business.hour_start}:" + "0".repeat(2 - business.min_start.toString().length) + "${business.min_start}"
-                timeEnd.text = "${business.hour_end}:" +  "0".repeat(2 - business.min_start.toString().length) + "${business.min_end}"
+                timeStart.text =
+                    "${business.hour_start}:" + "0".repeat(2 - business.min_start.toString().length) + "${business.min_start}"
+                timeEnd.text =
+                    "${business.hour_end}:" + "0".repeat(2 - business.min_start.toString().length) + "${business.min_end}"
                 businessName.text = business.name_of_business
             }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BusinessHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.business_item, parent, false)
+        val view =
+            LayoutInflater.from(parent.context).inflate(R.layout.business_item, parent, false)
         return BusinessHolder(view)
     }
 
@@ -48,7 +52,8 @@ class BusinessAdapter : RecyclerView.Adapter<BusinessAdapter.BusinessHolder>() {
         sortBusinessList()
         notifyDataSetChanged()
     }
-    fun equals(yeah: BusinessModel, other: BusinessModel) : Boolean {
+
+    fun equals(yeah: BusinessModel, other: BusinessModel): Boolean {
         return yeah.name_of_business == other.name_of_business &&
                 yeah.year == other.year &&
                 yeah.month == other.month &&
@@ -96,6 +101,5 @@ class BusinessAdapter : RecyclerView.Adapter<BusinessAdapter.BusinessHolder>() {
 
     private fun sortBusinessList() {
         business_list.sortWith(compareBy({ it.hour_start }, { it.min_start }))
-
     }
 }
