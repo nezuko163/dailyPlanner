@@ -1,5 +1,6 @@
 package com.example.myapplication
 
+import android.annotation.SuppressLint
 import android.app.TimePickerDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -29,6 +30,7 @@ class AddNewThing : AppCompatActivity() {
     private var min_end: Int? = null
     private var old_business: BusinessModel? = null
 
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         init()
@@ -63,14 +65,24 @@ class AddNewThing : AppCompatActivity() {
             }
 
             button.setOnClickListener {
-                if (hour_start == -1) { done() }
-                else { redact() }
+                if (hour_start == -1) {
+                    done()
+                } else {
+                    redact()
+                }
             }
         }
 
         if (hour_start != -1) {
-            binding.timeStartEt.setText("$hour_start:$min_start")
-            binding.timeEndEt.setText("$hour_end:$min_end")
+            binding.timeStartEt.setText(
+                "0".repeat(2 - hour_start.toString().length) + "$hour_start:" + "0".repeat(
+                    2 - min_start.toString().length
+                ) + "$min_start"
+            )
+            binding.timeEndEt.setText(
+                "0".repeat(2 - hour_end.toString().length) + "$hour_end:" + "0".repeat(
+                2 - min_end.toString().length
+            ) + "$min_end")
             binding.businessEt.setText(name_of_business)
             Log.i("zxc", name_of_business!!)
             binding.delete.visibility = View.VISIBLE
