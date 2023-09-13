@@ -35,7 +35,6 @@ class DayActivity : AppCompatActivity() {
         private var year: Int? = null
     }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         init()
@@ -47,7 +46,6 @@ class DayActivity : AppCompatActivity() {
         adapter.deleteDayTimeBusinesses()
         super.onDestroy()
     }
-
 
     private fun init() {
         binding = ActivityDayBinding.inflate(layoutInflater)
@@ -69,6 +67,15 @@ class DayActivity : AppCompatActivity() {
         adapter.onItemClick = { business: BusinessModel ->
             goToAddActivityForRedact(business)
         }
+
+        adapter.onStarClick = { business: BusinessModel ->
+            db.invertPriority(business)
+        }
+
+        adapter.onClockClick = { business: BusinessModel ->
+            db.invertAlarm(business)
+        }
+
         binding.rcView.adapter = adapter
     }
 
@@ -89,6 +96,9 @@ class DayActivity : AppCompatActivity() {
         val min_start = result.data?.getIntExtra("min_start", -1)
         val hour_end = result.data?.getIntExtra("hour_end", -1)
         val min_end = result.data?.getIntExtra("min_end", -1)
+        val priority = result.data?.getIntExtra("priority", 0)
+        val alarm = result.data?.getIntExtra("alarm", 0)
+
 
         return BusinessModel(
             name_of_business!!,
@@ -98,7 +108,9 @@ class DayActivity : AppCompatActivity() {
             hour_start!!,
             min_start!!,
             hour_end!!,
-            min_end!!
+            min_end!!,
+            priority!!,
+            alarm!!
         )
     }
 
@@ -116,6 +128,8 @@ class DayActivity : AppCompatActivity() {
         val old_min_start = result.data?.getIntExtra("old_min_start", -1)
         val old_hour_end = result.data?.getIntExtra("old_hour_end", -1)
         val old_min_end = result.data?.getIntExtra("old_min_end", -1)
+        val old_priority = result.data?.getIntExtra("old_priority", 0)
+        val old_alarm = result.data?.getIntExtra("old_alarm", 0)
 
         try {
             val old_business = BusinessModel(
@@ -127,7 +141,9 @@ class DayActivity : AppCompatActivity() {
                 old_hour_start!!,
                 old_min_start!!,
                 old_hour_end!!,
-                old_min_end!!
+                old_min_end!!,
+                old_priority!!,
+                old_alarm!!
             )
 
             db.redactBusiness(old_business, new_business)
@@ -200,6 +216,8 @@ class DayActivity : AppCompatActivity() {
             .putExtra("min_start", business.min_start)
             .putExtra("hour_end", business.hour_end)
             .putExtra("min_end", business.min_end)
+            .putExtra("priority", business.priority)
+            .putExtra("alarm", business.alarm)
         launcher.launch(i)
     }
 

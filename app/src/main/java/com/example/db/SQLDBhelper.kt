@@ -8,10 +8,9 @@ import android.database.sqlite.SQLiteOpenHelper
 import com.example.model.BusinessModel as BusinessModel
 
 class SQLDBhelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_VERSION) {
-
     companion object {
         private val DB_NAME = "business.db"
-        private val DB_VERSION = 1
+        private val DB_VERSION = 3
         private val TABLE_NAME = "buss"
 
         private val COLUMN_ID = "id"
@@ -23,16 +22,8 @@ class SQLDBhelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, D
         private val COLUMN_MIN_START = "min_start"
         private val COLUMN_HOUR_END = "hour_end"
         private val COLUMN_MIN_END = "min_end"
-    }
-
-    interface SQLDBhelper {
-        fun deleteBusiness(id: Int)
-        fun deleteBusiness(business: BusinessModel)
-        fun deleteAll()
-        fun redactBusiness(id: Int, business: BusinessModel)
-        fun getBusinesses(condition: String = "1"): ArrayList<BusinessModel>
-        fun addBusiness(business: BusinessModel): Long
-        fun deleteDayTimeBusinesses(year: Int, month: Int, day: Int)
+        private val COLUMN_PRIORITY = "priority"
+        private val COLUMN_ALARM = "alarm"
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
@@ -45,25 +36,21 @@ class SQLDBhelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, D
                 "$COLUMN_HOUR_START INTEGER, " +
                 "$COLUMN_MIN_START INTEGER, " +
                 "$COLUMN_HOUR_END INTEGER, " +
-                "$COLUMN_MIN_END INTEGER);"
+                "$COLUMN_MIN_END INTEGER, " +
+                "$COLUMN_PRIORITY INTEGER DEFAULT 0, " +
+                "$COLUMN_ALARM INTEGER DEFAULT 0);"
         db?.execSQL(create_db)
-
-        db?.close()
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
         val drop_db = "DROP TABLE IF EXISTS $TABLE_NAME;"
         db!!.execSQL(drop_db)
-
-        db.close()
     }
 
     fun deleteBusiness(id: Int) {
         val db = this.writableDatabase
-
         val delete_q = "DELETE FROM $TABLE_NAME WHERE id = $id;"
         db.execSQL(delete_q)
-        db.close()
     }
 
     fun deleteBusiness(business: BusinessModel) {
@@ -79,7 +66,6 @@ class SQLDBhelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, D
                 "$COLUMN_HOUR_END = ${business.hour_end} AND " +
                 "$COLUMN_MIN_END = ${business.min_end};"
         db.execSQL(delete_q)
-        db.close()
     }
 
 
@@ -102,6 +88,8 @@ class SQLDBhelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, D
         contentValues.put(COLUMN_MIN_START, business_new.min_start)
         contentValues.put(COLUMN_HOUR_END, business_new.hour_end)
         contentValues.put(COLUMN_MIN_END, business_new.min_end)
+        contentValues.put(COLUMN_PRIORITY, business_new.priority)
+        contentValues.put(COLUMN_ALARM, business_new.alarm)
 
         val condition = "$COLUMN_NAME_OF_BUS = \"${business_old.name_of_business}\" AND \n" +
                 "$COLUMN_YEAR = ${business_old.year} AND \n" +
@@ -113,7 +101,6 @@ class SQLDBhelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, D
                 "$COLUMN_MIN_END = ${business_old.min_end}"
 
         db.update(TABLE_NAME, contentValues, condition, arrayOf())
-        db.close()
     }
 
     fun deleteDayTimeBusinesses(year: Int, month: Int, day: Int) {
@@ -124,7 +111,6 @@ class SQLDBhelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, D
                 "$COLUMN_MONTH = $month AND " +
                 "$COLUMN_DAY = $day;"
         db.execSQL(delete_q)
-        db.close()
     }
 
 
@@ -140,10 +126,19 @@ class SQLDBhelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, D
         contentValues.put(COLUMN_MIN_START, business.min_start)
         contentValues.put(COLUMN_HOUR_END, business.hour_end)
         contentValues.put(COLUMN_MIN_END, business.min_end)
+        contentValues.put(COLUMN_PRIORITY, business.priority)
+        contentValues.put(COLUMN_ALARM, business.alarm)
 
         val success = db.insert(TABLE_NAME, null, contentValues)
-        db.close()
         return success
+    }
+
+    fun invertPriority(business: BusinessModel) {
+        redactBusiness(business, business)
+    }
+
+    fun invertAlarm(business: BusinessModel) {
+        redactBusiness(business, business)
     }
 
     fun getBusinesses(condition: String = "1"): ArrayList<BusinessModel> {
@@ -170,19 +165,23 @@ class SQLDBhelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, D
         var min_start: Int
         var hour_end: Int
         var min_end: Int
+        var priority: Int
+        var alarm: Int
 
 
         if (cursor.moveToFirst()) {
             do {
-                id = cursor.getInt(max(0, cursor.getColumnIndex("$COLUMN_ID")))
-                business = cursor.getString(max(0, cursor.getColumnIndex("$COLUMN_NAME_OF_BUS")))
-                year = cursor.getInt(max(0, cursor.getColumnIndex("$COLUMN_YEAR")))
-                month = cursor.getInt(max(0, cursor.getColumnIndex("$COLUMN_MONTH")))
-                day = cursor.getInt(max(0, cursor.getColumnIndex("$COLUMN_DAY")))
-                hour_start = cursor.getInt(max(0, cursor.getColumnIndex("$COLUMN_HOUR_START")))
-                min_start = cursor.getInt(max(0, cursor.getColumnIndex("$COLUMN_MIN_START")))
-                hour_end = cursor.getInt(max(0, cursor.getColumnIndex("$COLUMN_HOUR_END")))
-                min_end = cursor.getInt(max(0, cursor.getColumnIndex("$COLUMN_MIN_END")))
+                id = cursor.getInt(max(0, cursor.getColumnIndex(COLUMN_ID)))
+                business = cursor.getString(max(0, cursor.getColumnIndex(COLUMN_NAME_OF_BUS)))
+                year = cursor.getInt(max(0, cursor.getColumnIndex(COLUMN_YEAR)))
+                month = cursor.getInt(max(0, cursor.getColumnIndex(COLUMN_MONTH)))
+                day = cursor.getInt(max(0, cursor.getColumnIndex(COLUMN_DAY)))
+                hour_start = cursor.getInt(max(0, cursor.getColumnIndex(COLUMN_HOUR_START)))
+                min_start = cursor.getInt(max(0, cursor.getColumnIndex(COLUMN_MIN_START)))
+                hour_end = cursor.getInt(max(0, cursor.getColumnIndex(COLUMN_HOUR_END)))
+                min_end = cursor.getInt(max(0, cursor.getColumnIndex(COLUMN_MIN_END)))
+                priority = cursor.getInt(max(0, cursor.getColumnIndex(COLUMN_PRIORITY)))
+                alarm = cursor.getInt(max(0, cursor.getColumnIndex(COLUMN_ALARM)))
 
                 val bs = BusinessModel(
                     business,
@@ -193,6 +192,8 @@ class SQLDBhelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, D
                     min_start,
                     hour_end,
                     min_end,
+                    priority,
+                    alarm,
                     id
                 )
                 bs_list.add(bs)

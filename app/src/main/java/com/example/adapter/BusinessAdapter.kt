@@ -11,14 +11,28 @@ import com.example.myapplication.databinding.BusinessItemBinding
 
 class BusinessAdapter : RecyclerView.Adapter<BusinessAdapter.BusinessHolder>() {
     private var business_list = ArrayList<BusinessModel>()
-    var onItemClick: ((BusinessModel) -> Unit)? = null
+    lateinit var onItemClick: (BusinessModel) -> Unit
+    lateinit var onStarClick: (BusinessModel) -> Unit
+    lateinit var onClockClick: (BusinessModel) -> Unit
 
     inner class BusinessHolder(item: View) : RecyclerView.ViewHolder(item) {
         val binding = BusinessItemBinding.bind(item)
 
         init {
             item.setOnClickListener {
-                onItemClick?.invoke(business_list[adapterPosition])
+                onItemClick.invoke(business_list[adapterPosition])
+            }
+
+            binding.star.setOnClickListener {
+                business_list[adapterPosition].invertPriority()
+                changeStarColor(business_list[adapterPosition].priority)
+                onStarClick.invoke(business_list[adapterPosition])
+            }
+
+            binding.clock.setOnClickListener {
+                business_list[adapterPosition].invertAlarm()
+                changeClockColor(business_list[adapterPosition].alarm)
+                onClockClick.invoke(business_list[adapterPosition])
             }
         }
 
@@ -28,9 +42,24 @@ class BusinessAdapter : RecyclerView.Adapter<BusinessAdapter.BusinessHolder>() {
                 timeStart.text =
                     "${business.hour_start}:" + "0".repeat(2 - business.min_start.toString().length) + "${business.min_start}"
                 timeEnd.text =
-                    "${business.hour_end}:" + "0".repeat(2 - business.min_start.toString().length) + "${business.min_end}"
+                    "${business.hour_end}:" + "0".repeat(2 - business.min_end.toString().length) + "${business.min_end}"
                 businessName.text = business.name_of_business
+
+                if (business.priority == 0) binding.star.setColorFilter(R.color.black)
+                else binding.star.clearColorFilter()
+                if (business.alarm == 0) binding.clock.setColorFilter(R.color.black)
+                else binding.clock.clearColorFilter()
             }
+        }
+
+        private fun changeStarColor(priority: Int) {
+            if (priority == 0) binding.star.setColorFilter(R.color.black)
+            else binding.star.clearColorFilter()
+        }
+
+        private fun changeClockColor(alarm: Int) {
+            if (alarm == 0) binding.clock.setColorFilter(R.color.black)
+            else binding.clock.clearColorFilter()
         }
     }
 
@@ -84,16 +113,16 @@ class BusinessAdapter : RecyclerView.Adapter<BusinessAdapter.BusinessHolder>() {
     @SuppressLint("NotifyDataSetChanged")
     fun setBusinessList(_bs_list: ArrayList<BusinessModel>) {
         business_list = _bs_list
+
         sortBusinessList()
-        for (i in business_list) {
-            println(i.name_of_business + " ${i.hour_start} ${i.min_start}")
-        }
         notifyDataSetChanged()
     }
 
+//    fun getBusiness()
+
     @SuppressLint("NotifyDataSetChanged")
     fun redactBusiness(business_old: BusinessModel, business_new: BusinessModel) {
-        this.deleteBusiness(business_old)
+        deleteBusiness(business_old)
         business_list.add(business_new)
         sortBusinessList()
         notifyDataSetChanged()

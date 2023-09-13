@@ -12,4 +12,9 @@
     <string name="time_end">time end</string>
     <string name="delete_title_item">delete</string>
     <string name="change_title_item">change</string>
+    <string name="date">date</string>
+    <string name="important_business">Important business</string>
+    <string name="set_an_alarm">set an alarm</string>
+    <string name="Redact">Redact</string>
+    <string name="Add">Add</string>
 </resources>

@@ -5,11 +5,9 @@ import android.app.TimePickerDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
 import androidx.core.text.isDigitsOnly
 import com.example.model.BusinessModel
 import com.example.myapplication.databinding.ActivityAddNewThingBinding
@@ -28,6 +26,8 @@ class AddNewThing : AppCompatActivity() {
     private var min_start: Int? = null
     private var hour_end: Int? = null
     private var min_end: Int? = null
+    private var priority: Int? = null
+    private var alarm: Int? = null
     private var old_business: BusinessModel? = null
 
     @SuppressLint("SetTextI18n")
@@ -35,6 +35,34 @@ class AddNewThing : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         init()
         setContentView(binding.root)
+
+
+        if (hour_start != -1) {
+            binding.timeStartEt.setText(
+                "0".repeat(2 - hour_start.toString().length) + "$hour_start:" + "0".repeat(
+                    2 - min_start.toString().length
+                ) + "$min_start"
+            )
+            binding.timeEndEt.setText(
+                "0".repeat(2 - hour_end.toString().length) + "$hour_end:" + "0".repeat(
+                    2 - min_end.toString().length
+                ) + "$min_end"
+            )
+            binding.businessEt.setText(name_of_business)
+            binding.delete.visibility = View.VISIBLE
+        }
+        if (priority == 1) binding.chbx1.isChecked = true
+        if (alarm == 1) binding.chbx2.isChecked = true
+    }
+
+    private fun init() {
+        binding = ActivityAddNewThingBinding.inflate(layoutInflater)
+        setListeners()
+        getData()
+        connenctIcons()
+    }
+
+    private fun setListeners() {
         binding.apply {
             tv.text = date
 
@@ -71,29 +99,14 @@ class AddNewThing : AppCompatActivity() {
                     redact()
                 }
             }
+
+            chbx1.setOnCheckedChangeListener { _, checked ->
+                priority = if (checked) 1 else 0
+            }
+            chbx2.setOnCheckedChangeListener { _, checked ->
+                alarm = if (checked) 1 else 0
+            }
         }
-
-        if (hour_start != -1) {
-            binding.timeStartEt.setText(
-                "0".repeat(2 - hour_start.toString().length) + "$hour_start:" + "0".repeat(
-                    2 - min_start.toString().length
-                ) + "$min_start"
-            )
-            binding.timeEndEt.setText(
-                "0".repeat(2 - hour_end.toString().length) + "$hour_end:" + "0".repeat(
-                2 - min_end.toString().length
-            ) + "$min_end")
-            binding.businessEt.setText(name_of_business)
-            Log.i("zxc", name_of_business!!)
-            binding.delete.visibility = View.VISIBLE
-        }
-    }
-
-    private fun init() {
-        binding = ActivityAddNewThingBinding.inflate(layoutInflater)
-
-        getData()
-        connenctIcons()
     }
 
     private fun getData() {
@@ -107,6 +120,8 @@ class AddNewThing : AppCompatActivity() {
         min_start = intent.getIntExtra("min_start", -1)
         hour_end = intent.getIntExtra("hour_end", -1)
         min_end = intent.getIntExtra("min_end", -1)
+        priority = intent.getIntExtra("priority", 0)
+        alarm = intent.getIntExtra("alarm", 0)
 
         if (hour_start != -1) {
             old_business = BusinessModel(
@@ -117,11 +132,13 @@ class AddNewThing : AppCompatActivity() {
                 hour_start!!,
                 min_start!!,
                 hour_end!!,
-                min_end!!
+                min_end!!,
+                priority!!,
+                alarm!!
             )
-            binding.textView4.text = "Redact"
+            binding.textView4.text = resources.getString(R.string.Redact)
         } else {
-            binding.textView4.text = "Add"
+            binding.textView4.text = resources.getString(R.string.Add)
         }
     }
 
@@ -170,7 +187,6 @@ class AddNewThing : AppCompatActivity() {
     inner class ReturnValues {
         var success: Boolean = true
         var bs: BusinessModel? = null
-
     }
 
     private fun getDataFromET(): ReturnValues {
@@ -181,12 +197,20 @@ class AddNewThing : AppCompatActivity() {
         val end = binding.timeEndEt.text.toString()
 
         check.success = checkDataFromET(bus_name, start, end)
-        if (check.success == false) return check
+        if (!check.success) return check
 
         val hour_start = start.slice(0..1).toInt()
         val min_start = start.slice(3..4).toInt()
         val hour_end = end.slice(0..1).toInt()
         val min_end = end.slice(3..4).toInt()
+
+        val priority: Int
+        val alarm: Int
+
+        val a = getDataFromChkbx()
+
+        priority = a.first
+        alarm = a.second
 
         check.bs =
             BusinessModel(
@@ -197,16 +221,24 @@ class AddNewThing : AppCompatActivity() {
                 hour_start,
                 min_start,
                 hour_end,
-                min_end
+                min_end,
+                priority,
+                alarm
             )
 
         return check
     }
 
+    private fun getDataFromChkbx(): Pair<Int, Int> =
+        Pair(
+            if (binding.chbx1.isChecked) 1 else 0,
+            if (binding.chbx2.isChecked) 1 else 0
+        )
+
     private fun done() {
         val asd = getDataFromET()
 
-        if (asd.success == false) return
+        if (!asd.success) return
 
         val i = Intent()
             .putExtra("business", asd.bs!!.name_of_business)
@@ -214,6 +246,8 @@ class AddNewThing : AppCompatActivity() {
             .putExtra("min_start", asd.bs!!.min_start)
             .putExtra("hour_end", asd.bs!!.hour_end)
             .putExtra("min_end", asd.bs!!.min_end)
+            .putExtra("priority", asd.bs!!.priority)
+            .putExtra("alarm", asd.bs!!.alarm)
         setResult(1000, i)
         finish()
     }
@@ -225,6 +259,8 @@ class AddNewThing : AppCompatActivity() {
             .putExtra("min_start", min_start)
             .putExtra("hour_end", hour_end)
             .putExtra("min_end", min_end)
+            .putExtra("priority", priority)
+            .putExtra("alarm", alarm)
         setResult(1002, i)
         finish()
     }
@@ -237,12 +273,16 @@ class AddNewThing : AppCompatActivity() {
             .putExtra("old_hour_end", old_business?.hour_end)
             .putExtra("old_min_end", old_business?.min_end)
             .putExtra("old_business", old_business?.name_of_business)
+            .putExtra("old_priority", old_business?.priority)
+            .putExtra("old_alarm", old_business?.alarm)
 
             .putExtra("hour_start", new_bs.hour_start)
             .putExtra("min_start", new_bs.min_start)
             .putExtra("hour_end", new_bs.hour_end)
             .putExtra("min_end", new_bs.min_end)
             .putExtra("business", new_bs.name_of_business)
+            .putExtra("priority", new_bs.priority)
+            .putExtra("alarm", new_bs.alarm)
 
         setResult(1001, i)
         finish()
