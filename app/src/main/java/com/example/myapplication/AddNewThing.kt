@@ -1,20 +1,34 @@
 package com.example.myapplication
 
 import android.annotation.SuppressLint
+import android.app.AlarmManager
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.app.TimePickerDialog
+import android.content.Context
 import android.content.Intent
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
+import androidx.core.app.NotificationCompat
 import androidx.core.text.isDigitsOnly
+import com.example.alarm.AlarmReceiver
+import com.example.db.SQLDBhelper
 import com.example.model.BusinessModel
 import com.example.myapplication.databinding.ActivityAddNewThingBinding
 import java.text.SimpleDateFormat
 import java.util.*
 
 class AddNewThing : AppCompatActivity() {
+    private lateinit var cal: Calendar
+    private lateinit var alarmManager: AlarmManager
+    private lateinit var pendingIntent: PendingIntent
+
     private lateinit var binding: ActivityAddNewThingBinding
     private var date: String? = null
     private var year: Int? = null
@@ -95,6 +109,9 @@ class AddNewThing : AppCompatActivity() {
             button.setOnClickListener {
                 if (hour_start == -1) {
                     done()
+//                    addData()
+//                    createNotificationChannel()
+//                    setAlarm()
                 } else {
                     redact()
                 }
@@ -104,7 +121,13 @@ class AddNewThing : AppCompatActivity() {
                 priority = if (checked) 1 else 0
             }
             chbx2.setOnCheckedChangeListener { _, checked ->
-                alarm = if (checked) 1 else 0
+//                alarm = if (checked) 1 else 0
+                if(checked) {
+                    alarm = 1
+                }
+                else {
+                    alarm = 0
+                }
             }
         }
     }
@@ -143,7 +166,7 @@ class AddNewThing : AppCompatActivity() {
     }
 
     private fun onTimeClick(edit_text: EditText) {
-        val cal = Calendar.getInstance()
+        cal = Calendar.getInstance()
         val timeSetListener = TimePickerDialog.OnTimeSetListener { timePicker, hour, minute ->
             cal.set(Calendar.HOUR_OF_DAY, hour)
             cal.set(Calendar.MINUTE, minute)

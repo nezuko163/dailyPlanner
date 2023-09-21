@@ -1,9 +1,15 @@
 package com.example.myapplication
 
+import android.app.AlarmManager
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.DialogInterface
 import android.content.Intent
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
@@ -11,11 +17,16 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.adapter.BusinessAdapter
+import com.example.alarm.AlarmReceiver
 import com.example.db.SQLDBhelper
 import com.example.model.BusinessModel
 import com.example.myapplication.databinding.ActivityDayBinding
+import java.util.Calendar
 
 class DayActivity : AppCompatActivity() {
+    private lateinit var alarmManager: AlarmManager
+    private lateinit var pendingIntent: PendingIntent
+
     private lateinit var binding: ActivityDayBinding
     private lateinit var launcher: ActivityResultLauncher<Intent>
 
@@ -146,6 +157,8 @@ class DayActivity : AppCompatActivity() {
                 old_alarm!!
             )
 
+
+
             db.redactBusiness(old_business, new_business)
             adapter.redactBusiness(old_business, new_business)
 
@@ -161,8 +174,55 @@ class DayActivity : AppCompatActivity() {
         val business = getResultFromAddActivity(result)
         db.addBusiness(business)
         adapter.addBusiness(business)
+
+        createNotificationChannel()
+        setAlarm(business)
     }
 
+    private fun setAlarm(business: BusinessModel) {
+        alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
+        val i = Intent(this, AlarmReceiver::class.java)
+
+        Log.i("TEST_INTENT", "name: ${business.name_of_business}" + business.year + " " + business.month + " " + business.day + " " + business.hour_start + " " + business.min_start)
+        i.putExtra("name", business.name_of_business)
+        i.putExtra("year", business.year)
+        i.putExtra("month", business.month)
+        i.putExtra("day", business.day)
+        i.putExtra("hour_start", business.hour_start)
+        i.putExtra("hour_end", business.hour_end)
+        i.putExtra("min_start", business.min_start)
+        i.putExtra("min_end", business.min_end)
+
+        val cal = Calendar.getInstance()
+//        cal[Calendar.YEAR] = business.year
+//        cal[Calendar.MONTH] = business.month
+//        cal[Calendar.DAY_OF_MONTH] = business.day
+        cal[Calendar.HOUR_OF_DAY] = business.hour_start
+        cal[Calendar.MINUTE] = business.min_start
+
+        pendingIntent = PendingIntent.getBroadcast(this, 0, i, PendingIntent.FLAG_MUTABLE)
+
+        alarmManager.setAlarmClock(AlarmManager.AlarmClockInfo(cal.timeInMillis, pendingIntent), pendingIntent)
+    }
+
+    private fun createNotificationChannel() {
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+            val name: CharSequence = "alarmChannel"
+            val description = "desc for alarm"
+            val importance = NotificationManager.IMPORTANCE_MAX
+            val channel = NotificationChannel("0", name, importance)
+            channel.description = description
+            val notificationManager = getSystemService(
+                NotificationManager::class.java
+            )
+
+            notificationManager.createNotificationChannel(channel)
+
+        }
+
+    }
 
     private fun onIconsClick() {
         binding.backArrow.setOnClickListener { goBack() }
